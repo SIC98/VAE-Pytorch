@@ -7,8 +7,9 @@ import os
 
 
 class VAE_Experiment(pl.LightningDataModule):
-    def __init__(self) -> None:
-        self.model = Vanilla_VAE
+    def __init__(self, model, params: dict) -> None:
+        self.model = model
+        self.params = params
     
     def forward(self, input: tensor, **kwargs):
         return self.model(input, **kwargs)
