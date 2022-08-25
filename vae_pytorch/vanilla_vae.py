@@ -4,10 +4,11 @@ from torch import tensor
 from torch.nn import functional as F
 
 class Vanilla_VAE(nn.Module):
-    def __init__(self, in_channels: int, latent_dim: int, hidden_dims: list = [32, 64, 128, 256, 512]) -> None:
+    def __init__(self, in_channels: int, latent_dim: int, hidden_dims: list) -> None:
         super().__init__()
 
         self.latent_dim = latent_dim
+        self.hidden_dims = hidden_dims
 
         # Encoder Layers
         encoder_channels = in_channels
@@ -81,7 +82,7 @@ class Vanilla_VAE(nn.Module):
 
     def decode(self, z: tensor) -> tensor:
         result = self.decoder_input(z)
-        result = result.view(-1, 512, 2, 2)
+        result = result.view(-1, self.hidden_dims[0], 2, 2)
         result = self.decoder(result)
         result = self.final_layer(result)
         return result

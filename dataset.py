@@ -48,21 +48,21 @@ class VAEDataset(LightningDataModule):
 
     def setup(self, stage: Optional[str] = None) -> None:
 
-        train_transforms = transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.CenterCrop(148),
-            transforms.Resize(self.patch_size),
-            transforms.ToTensor()
-        ])
-
-        val_transforms = transforms.Compose([
-            transforms.RandomHorizontalFlip(),
-            transforms.CenterCrop(148),
-            transforms.Resize(self.patch_size),
-            transforms.ToTensor()
-        ])
-
         if self.data_name == 'celeba':
+
+            train_transforms = transforms.Compose([
+                transforms.RandomHorizontalFlip(),
+                transforms.CenterCrop(148),
+                transforms.Resize(self.patch_size),
+                transforms.ToTensor()
+            ])
+
+            val_transforms = transforms.Compose([
+                transforms.RandomHorizontalFlip(),
+                transforms.CenterCrop(148),
+                transforms.Resize(self.patch_size),
+                transforms.ToTensor()
+            ])
 
             self.train_dataset = MyCelebA(
                 self.data_dir,
@@ -80,6 +80,16 @@ class VAEDataset(LightningDataModule):
 
         elif self.data_name == 'mnist':
 
+            train_transforms = transforms.Compose([
+                transforms.Resize(self.patch_size),
+                transforms.ToTensor()
+            ])
+
+            val_transforms = transforms.Compose([
+                transforms.Resize(self.patch_size),
+                transforms.ToTensor()
+            ])
+
             self.train_dataset = MNIST(
                 self.data_dir,
                 train=True,
@@ -93,6 +103,9 @@ class VAEDataset(LightningDataModule):
                 transform=val_transforms,
                 download=True,
             )
+
+        else:
+            raise ValueError('Wrong data_name')
 
 
     def train_dataloader(self) -> DataLoader:
