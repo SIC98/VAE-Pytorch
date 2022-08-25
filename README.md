@@ -3,7 +3,8 @@ Clone coding of [PyTorch-VAE](https://github.com/AntixK/PyTorch-VAE/tree/master)
 
 ## 🚀 Train
 ```bash
-python train.py -c configs/vae.yaml
+python train.py -c configs/celeba.yaml
+python train.py -c configs/mnist.yaml
 ```
 
 ## ✨ New features

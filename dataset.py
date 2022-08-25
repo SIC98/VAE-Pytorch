@@ -1,7 +1,7 @@
 from typing import List, Optional, Sequence, Union
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
-from torchvision.datasets import CelebA
+from torchvision.datasets import CelebA, MNIST
 from torchvision import transforms
 
 
@@ -28,6 +28,7 @@ class VAEDataset(LightningDataModule):
 
     def __init__(
         self,
+        data_name: str,
         data_path: str,
         train_batch_size: int = 8,
         val_batch_size: int = 8,
@@ -37,6 +38,7 @@ class VAEDataset(LightningDataModule):
     ):
         super().__init__()
 
+        self.data_name = data_name
         self.data_dir = data_path
         self.train_batch_size = train_batch_size
         self.val_batch_size = val_batch_size
@@ -60,19 +62,38 @@ class VAEDataset(LightningDataModule):
             transforms.ToTensor()
         ])
 
-        self.train_dataset = MyCelebA(
-            self.data_dir,
-            split='train',
-            transform=train_transforms,
-            download=False,
-        )
+        if self.data_name == 'celeba':
 
-        self.val_dataset = MyCelebA(
-            self.data_dir,
-            split='test',
-            transform=val_transforms,
-            download=False,
-        )
+            self.train_dataset = MyCelebA(
+                self.data_dir,
+                split='train',
+                transform=train_transforms,
+                download=False,
+            )
+
+            self.val_dataset = MyCelebA(
+                self.data_dir,
+                split='test',
+                transform=val_transforms,
+                download=False,
+            )
+
+        elif self.data_name == 'mnist':
+
+            self.train_dataset = MNIST(
+                self.data_dir,
+                train=True,
+                transform=train_transforms,
+                download=True,
+            )
+
+            self.val_dataset = MNIST(
+                self.data_dir,
+                train=False,
+                transform=val_transforms,
+                download=True,
+            )
+
 
     def train_dataloader(self) -> DataLoader:
 

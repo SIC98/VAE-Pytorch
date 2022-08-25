@@ -10,20 +10,21 @@ class Vanilla_VAE(nn.Module):
         self.latent_dim = latent_dim
 
         # Encoder Layers
+        encoder_channels = in_channels
         modules = []
 
         for dim in hidden_dims:
             modules.append(
                 nn.Sequential(
                     nn.Conv2d(
-                        in_channels, out_channels=dim,
+                        encoder_channels, out_channels=dim,
                         kernel_size=3, stride=2, padding=1
                     ),
                     nn.BatchNorm2d(dim),
                     nn.LeakyReLU()
                 )
             )
-            in_channels = dim
+            encoder_channels = dim
 
         self.encoder = nn.Sequential(*modules)
         self.fc_mu = nn.Linear(hidden_dims[-1]*4, latent_dim)
@@ -65,7 +66,7 @@ class Vanilla_VAE(nn.Module):
             ),
             nn.BatchNorm2d(hidden_dims[-1]),
             nn.LeakyReLU(),
-            nn.Conv2d(hidden_dims[-1], out_channels= 3, kernel_size=3, padding=1),
+            nn.Conv2d(hidden_dims[-1], out_channels=in_channels, kernel_size=3, padding=1),
             nn.Tanh()
         )
     
