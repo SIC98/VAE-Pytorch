@@ -5,6 +5,12 @@ from torchvision.datasets import CelebA
 from torchvision import transforms
 
 
+class MyCelebA(CelebA):
+
+    def _check_integrity(self) -> bool:
+        return True
+
+
 class VAEDataset(LightningDataModule):
     '''
     PyTorch Lightning data module
@@ -54,14 +60,14 @@ class VAEDataset(LightningDataModule):
             transforms.ToTensor()
         ])
 
-        self.train_dataset = CelebA(
+        self.train_dataset = MyCelebA(
             self.data_dir,
             split='train',
             transform=train_transforms,
             download=False,
         )
 
-        self.val_dataset = CelebA(
+        self.val_dataset = MyCelebA(
             self.data_dir,
             split='test',
             transform=val_transforms,
