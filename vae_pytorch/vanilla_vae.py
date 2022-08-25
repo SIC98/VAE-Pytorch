@@ -7,6 +7,8 @@ class Vanilla_VAE(nn.Module):
     def __init__(self, in_channels: int, latent_dim: int, hidden_dims: list = [32, 64, 128, 256, 512]) -> None:
         super().__init__()
 
+        self.latent_dim = latent_dim
+
         # Encoder Layers
         modules = []
 
@@ -83,7 +85,7 @@ class Vanilla_VAE(nn.Module):
         result = self.final_layer(result)
         return result
 
-    def representation(self, mu: tensor, var: tensor) -> tensor:
+    def reparameterize(self, mu: tensor, var: tensor) -> tensor:
         std = torch.exp(0.5 * var)
         eps = torch.randn_like(std)
         return eps * std + mu

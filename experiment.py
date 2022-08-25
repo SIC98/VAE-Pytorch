@@ -1,4 +1,3 @@
-from vae_pytorch.vanilla_vae import Vanilla_VAE
 import torchvision.utils as vutils
 import pytorch_lightning as pl
 from torch import tensor
@@ -6,19 +5,20 @@ import torch
 import os
 
 
-class VAE_Experiment(pl.LightningDataModule):
+class VAE_Experiment(pl.LightningModule):
     def __init__(self, model, params: dict) -> None:
+        super().__init__()
         self.model = model
         self.params = params
     
-    def forward(self, input: tensor, **kwargs):
-        return self.model(input, **kwargs)
+    def forward(self, input: tensor):
+        return self.model(input)
     
     def training_step(self, batch, batch_idx, optimizer_idx=0):
-        real_img, labels = batch
+        real_img, _labels = batch
         self.curr_device = real_img.device
 
-        results = self.forward(real_img, labels = labels)
+        results = self.forward(real_img)
         train_loss = self.model.loss_function(
             *results,
             M_N=self.params['kld_weight'],
@@ -32,18 +32,18 @@ class VAE_Experiment(pl.LightningDataModule):
     
     def validation_step(self, batch, batch_idx, optimizer_idx=0):
 
-        real_img, labels = batch
+        real_img, _labels = batch
         self.curr_device = real_img.device
 
-        results = self.forward(real_img, labels=labels)
-        train_loss = self.model.loss_function(
+        results = self.forward(real_img)
+        val_loss = self.model.loss_function(
             *results,
             M_N=1.0,
             optimizer_idx=optimizer_idx,
             batch_idx=batch_idx
         )
 
-        self.log_dict({key: val.item() for key, val in train_loss.items()}, sync_dist=True)
+        self.log_dict({f"val_{key}": val.item() for key, val in val_loss.items()}, sync_dist=True)
     
     def on_validation_end(self) -> None:
         self.sample_images()
@@ -83,11 +83,11 @@ class VAE_Experiment(pl.LightningDataModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
             self.model.parameters(),
-            lr=self.parms['LR'],
+            lr=self.params['LR'],
             weight_decay=self.params['weight_decay']
         )
         scheduler = torch.optim.lr_scheduler.ExponentialLR(
             optimizer,
             gamma=self.params['scheduler_gamma']
         )
-        return optimizer, scheduler
+        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
