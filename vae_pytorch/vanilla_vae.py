@@ -107,7 +107,7 @@ class Vanilla_VAE(nn.Module):
         loss = recons_loss + kld_weight * kld_loss
         return {'loss': loss, 'Reconstruction_Loss': recons_loss.detach(), 'KLD': -kld_loss.detach()}
     
-    def sample(self, num_samples:int, current_device: int, **kwargs):
+    def sample(self, num_samples:int, current_device: int):
         z = torch.randn(num_samples, self.latent_dim)
         z = z.to(current_device)
         samples = self.decode(z)
