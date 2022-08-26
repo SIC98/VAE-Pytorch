@@ -3,3 +3,4 @@ torch==1.12.1+cu113
 torchvision==0.13.1+cu113
 pytorch-lightning==1.7.2
 wandb==0.13.2
+matplotlib==3.5.3

@@ -97,6 +97,11 @@ class Vanilla_VAE(nn.Module):
         z = self.reparameterize(mu, var)
         return [self.decode(z), input, mu, var]
     
+    def get_latent_variable(self, input):
+        mu, var = self.encode(input)
+        z = self.reparameterize(mu, var)
+        return z
+
     def loss_function(self, *args, **kwargs) -> dict:
         recons = args[0]
         input = args[1]

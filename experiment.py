@@ -1,6 +1,8 @@
 import torchvision.utils as vutils
+import matplotlib.pyplot as plt
 import pytorch_lightning as pl
 from torch import tensor
+import numpy as np
 import torch
 import os
 
@@ -47,6 +49,39 @@ class VAE_Experiment(pl.LightningModule):
     
     def on_validation_end(self) -> None:
         self.sample_images()
+        self.distribution_of_latent_variable()
+
+    def distribution_of_latent_variable(self):
+        N = 10
+        plt.figure(figsize=(8, 6))
+        merged_z = []
+        merged_label = []
+
+        for test_input, test_label in self.trainer.datamodule.test_dataloader():
+
+            test_input = test_input.to(self.curr_device)
+            z = self.model.get_latent_variable(test_input)
+            merged_z.append(z)
+            merged_label.append(test_label)
+
+        merged_z = torch.cat(merged_z, 0).cpu()
+        merged_label = torch.cat(merged_label, 0).cpu()
+
+        plt.scatter(merged_z[:, 0], merged_z[:, 1], c=merged_label, marker='o', edgecolor='none', cmap=discrete_cmap(N, 'jet'))
+        plt.colorbar(ticks=range(N))
+        axes = plt.gca()
+        self.z_range = 4
+        axes.set_xlim([-self.z_range-2, self.z_range+2])
+        axes.set_ylim([-self.z_range-2, self.z_range+2])
+        plt.grid(True)
+        plt.savefig(
+            os.path.join(
+                self.logger.log_dir,
+                'Distribution',
+                f'{self.logger.name}_Epoch_{self.current_epoch}.png'
+            )
+        )
+        plt.close()
     
     def sample_images(self):
         test_input, _test_label = next(iter(self.trainer.datamodule.test_dataloader()))
@@ -91,3 +126,17 @@ class VAE_Experiment(pl.LightningModule):
             gamma=self.params['scheduler_gamma']
         )
         return {'optimizer': optimizer, 'lr_scheduler': scheduler}
+
+
+# borrowed from https://gist.github.com/jakevdp/91077b0cae40f8f8244a
+def discrete_cmap(N, base_cmap=None):
+    '''Create an N-bin discrete colormap from the specified input map'''
+
+    # Note that if base_cmap is a string or None, you can simply do
+    #    return plt.cm.get_cmap(base_cmap, N)
+    # The following works for string, None, or a colormap instance:
+
+    base = plt.cm.get_cmap(base_cmap)
+    color_list = base(np.linspace(0, 1, N))
+    cmap_name = base.name + str(N)
+    return base.from_list(cmap_name, color_list, N)

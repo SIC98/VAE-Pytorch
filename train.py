@@ -61,6 +61,7 @@ runner = Trainer(
 
 Path(f'{tb_logger.log_dir}/Samples').mkdir(exist_ok=True, parents=True)
 Path(f'{tb_logger.log_dir}/Reconstructions').mkdir(exist_ok=True, parents=True)
+Path(f'{tb_logger.log_dir}/Distribution').mkdir(exist_ok=True, parents=True)
 
 print(f'======= Training {config["name"]} =======')
 runner.fit(experiment, datamodule=data)
