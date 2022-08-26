@@ -38,7 +38,7 @@ class VAE_Experiment(pl.LightningModule):
         results = self.forward(real_img)
         val_loss = self.model.loss_function(
             *results,
-            M_N=1.0,
+            M_N=self.params['kld_weight'], # 1.0
             optimizer_idx=optimizer_idx,
             batch_idx=batch_idx
         )
