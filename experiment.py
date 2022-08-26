@@ -71,8 +71,8 @@ class VAE_Experiment(pl.LightningModule):
         plt.colorbar(ticks=range(N))
         axes = plt.gca()
         self.z_range = 4
-        axes.set_xlim([-self.z_range-2, self.z_range+2])
-        axes.set_ylim([-self.z_range-2, self.z_range+2])
+        axes.set_xlim([-self.z_range, self.z_range])
+        axes.set_ylim([-self.z_range, self.z_range])
         plt.grid(True)
         plt.savefig(
             os.path.join(
