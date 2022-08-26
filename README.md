@@ -15,4 +15,5 @@ python train.py -c configs/mnist.yaml
 ## ✨ New features
 - [ ] Use WandB instead of TensorBoard
 - [x] Can train with MNIST dataset
+- [x] Add MNIST reconstruction results
 - [ ] Visualize of learned data manifold
