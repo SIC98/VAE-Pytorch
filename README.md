@@ -12,8 +12,15 @@ python train.py -c configs/mnist.yaml
 |:-------------------------------:|:----------------------------:|:----------------------------:|:-----------------------------:|:-----------------------------:|
 | ![](images/recons_original.png) | ![](images/recons_dim_2.png) | ![](images/recons_dim_5.png) | ![](images/recons_dim_10.png) | ![](images/recons_dim_20.png) |
 
+## 🎨 Learned MNIST manifold
+![](images/distribution_dim_2.png)
+
 ## ✨ New features
 - [ ] Use WandB instead of TensorBoard
 - [x] Can train with MNIST dataset
 - [x] Add MNIST reconstruction results
-- [ ] Visualize of learned data manifold
+- [x] Visualize of learned data manifold
+
+## 📄 Reference
+- [PyTorch-VAE](https://github.com/AntixK/PyTorch-VAE/tree/master)
+- [pytorch-mnist-vae](https://github.com/dragen1860/pytorch-mnist-vae)
