@@ -16,7 +16,7 @@ python train.py -c configs/mnist.yaml
 ![](images/distribution_dim_2.png)
 
 ## ✨ New features
-- [ ] Use WandB instead of TensorBoard
+- [x] Use WandB instead of TensorBoard
 - [x] Can train with MNIST dataset
 - [x] Add MNIST reconstruction results
 - [x] Visualize of learned data manifold
