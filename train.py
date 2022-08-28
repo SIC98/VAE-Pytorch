@@ -1,7 +1,7 @@
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.utilities.seed import seed_everything
 from pytorch_lightning.strategies.ddp import DDPStrategy
-from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.loggers import WandbLogger
 from vae_pytorch.vanilla_vae import Vanilla_VAE
 from pytorch_lightning import Trainer
 from experiment import VAE_Experiment
@@ -30,9 +30,10 @@ with open(args.filename, 'r') as file:
         print(exc)
 
 
-tb_logger = TensorBoardLogger(
+wandb_logger = WandbLogger(
     save_dir=config['logging_params']['save_dir'],
-    name=config['name']
+    name=config['name'],
+    log_model=True # Todo
 )
 
 # For reproducibility
@@ -45,12 +46,11 @@ data = VAEDataset(**config['data_params'], pin_memory=len(config['trainer_params
 
 data.setup()
 runner = Trainer(
-    logger=tb_logger,
+    logger=wandb_logger,
     callbacks=[
         LearningRateMonitor(),
         ModelCheckpoint(
             save_top_k=1,
-            dirpath=os.path.join(tb_logger.log_dir, 'checkpoints'),
             monitor='val_loss',
             save_last=True
         ),
@@ -58,10 +58,6 @@ runner = Trainer(
     strategy=DDPStrategy(find_unused_parameters=False),
     **config['trainer_params']
 )
-
-Path(f'{tb_logger.log_dir}/Samples').mkdir(exist_ok=True, parents=True)
-Path(f'{tb_logger.log_dir}/Reconstructions').mkdir(exist_ok=True, parents=True)
-Path(f'{tb_logger.log_dir}/Distribution').mkdir(exist_ok=True, parents=True)
 
 print(f'======= Training {config["name"]} =======')
 runner.fit(experiment, datamodule=data)

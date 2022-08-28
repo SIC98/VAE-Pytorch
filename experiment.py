@@ -4,7 +4,6 @@ import pytorch_lightning as pl
 from torch import tensor
 import numpy as np
 import torch
-import os
 
 
 class VAE_Experiment(pl.LightningModule):
@@ -53,7 +52,7 @@ class VAE_Experiment(pl.LightningModule):
 
     def distribution_of_latent_variable(self):
         N = 10
-        plt.figure(figsize=(8, 6))
+        figure = plt.figure(figsize=(8, 6))
         merged_z = []
         merged_label = []
 
@@ -74,13 +73,9 @@ class VAE_Experiment(pl.LightningModule):
         axes.set_xlim([-self.z_range, self.z_range])
         axes.set_ylim([-self.z_range, self.z_range])
         plt.grid(True)
-        plt.savefig(
-            os.path.join(
-                self.logger.log_dir,
-                'Distribution',
-                f'{self.logger.name}_Epoch_{self.current_epoch}.png'
-            )
-        )
+
+        self.logger.log_image(key='Distribution', images=[figure], caption=[f'epoch_{self.current_epoch}'])
+
         plt.close()
     
     def sample_images(self):
@@ -88,32 +83,26 @@ class VAE_Experiment(pl.LightningModule):
         test_input = test_input.to(self.curr_device)
         
         recons = self.model.generate(test_input)
-        vutils.save_image(
+        recons_imgs = vutils.make_grid(
             recons.data,
-            os.path.join(
-                self.logger.log_dir,
-                'Reconstructions',
-                f'recons_{self.logger.name}_Epoch_{self.current_epoch}.png'
-            ),
             normalize=True,
             nrow=12
         )
+        self.logger.log_image(key="Reconstructions", images=[recons_imgs], caption=["test123"])
 
         samples = self.model.sample(
             144,
             self.curr_device
         )
 
-        vutils.save_image(
+        samples_imgs =  vutils.make_grid(
             samples.cpu().data,
-            os.path.join(
-                self.logger.log_dir,
-                'Samples',
-                f'{self.logger.name}_Epoch_{self.current_epoch}.png'
-            ),
             normalize=True,
             nrow=12
         )
+
+        self.logger.log_image(key="Samples", images=[samples_imgs], caption=["test123"])
+
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
