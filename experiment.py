@@ -44,7 +44,7 @@ class VAE_Experiment(pl.LightningModule):
             batch_idx=batch_idx
         )
 
-        self.log_dict({f"val_{key}": val.item() for key, val in val_loss.items()}, sync_dist=True)
+        self.log_dict({f'val_{key}': val.item() for key, val in val_loss.items()}, sync_dist=True)
     
     def on_validation_end(self) -> None:
         self.sample_images()
@@ -88,7 +88,7 @@ class VAE_Experiment(pl.LightningModule):
             normalize=True,
             nrow=12
         )
-        self.logger.log_image(key="Reconstructions", images=[recons_imgs], caption=["test123"])
+        self.logger.log_image(key='Reconstructions', images=[recons_imgs], caption=[f'epoch_{self.current_epoch}'])
 
         samples = self.model.sample(
             144,
@@ -101,7 +101,7 @@ class VAE_Experiment(pl.LightningModule):
             nrow=12
         )
 
-        self.logger.log_image(key="Samples", images=[samples_imgs], caption=["test123"])
+        self.logger.log_image(key='Samples', images=[samples_imgs], caption=[f'epoch_{self.current_epoch}'])
 
 
     def configure_optimizers(self):

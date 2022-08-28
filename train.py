@@ -6,10 +6,8 @@ from vae_pytorch.vanilla_vae import Vanilla_VAE
 from pytorch_lightning import Trainer
 from experiment import VAE_Experiment
 from dataset import VAEDataset
-from pathlib import Path
 import argparse
 import yaml
-import os
 
 
 parser = argparse.ArgumentParser(description='Generic runner for VAE models')
