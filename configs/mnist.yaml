@@ -1,4 +1,4 @@
-name: 'VanillaVAE'
+name: 'VanillaVAE-mnist'
 
 model_params:
   in_channels: 1
@@ -27,4 +27,3 @@ trainer_params:
 
 logging_params:
   save_dir: 'logs'
-  name: 'VanillaVAE'
